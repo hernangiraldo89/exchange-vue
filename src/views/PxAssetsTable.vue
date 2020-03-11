@@ -3,43 +3,33 @@
     <thead>
       <tr class="bg-gray-100 border-b-2 border-gray-400">
         <th></th>
-        <th :class="{ up: this.sortOrder === 1, down: this.sortOrder === -1 }">
-          <span class="underline cursor-pointer" @click="changeSortOrder"
-            >Ranking</span
-          >
+        <th>
+          <span>Ranking</span>
         </th>
         <th>Nombre</th>
         <th>Precio</th>
         <th>Cap. de Mercado</th>
         <th>Variación 24hs</th>
-        <td class="hidden sm:block">
-          <input
-            class="bg-gray-100 focus:outline-none boder-b border-gray-400 py-2 px-4 block"
-            id="filter"
-            placeholder="Search"
-            type="text"
-            v-model="filter"
-          />
-        </td>
+        <td class="hidden sm:block"></td>
       </tr>
     </thead>
     <tbody>
       <tr
-        v-for="a in filteredAssets"
-        :key="a.key"
+        v-for="a in assets"
+        :key="a.id"
         class="border-b border-gray-200 hover:bg-gray-100 hover:bg-orange-100"
       >
         <td>
           <img
+            class="w-6 h-6"
             :src="
               `https://static.coincap.io/assets/icons/${a.symbol.toLowerCase()}@2x.png`
             "
             :alt="a.name"
-            srcset=""
           />
         </td>
         <td>
-          <strong>#{{ a.rank }}</strong>
+          <b># {{ a.rank }}</b>
         </td>
         <td>
           <router-link
@@ -61,9 +51,9 @@
           {{ a.changePercent24Hr | percent }}
         </td>
         <td class="hidden sm:block">
-          <ex-button @click="goToCoin(a.id)">
+          <px-button @custom-click="goToCoin(a.id)">
             <span>Detalle</span>
-          </ex-button>
+          </px-button>
         </td>
       </tr>
     </tbody>
@@ -71,21 +61,12 @@
 </template>
 
 <script>
-import ExButton from '@/components/ExButton'
+import PxButton from '@/components/PxButton'
 
 export default {
-  name: 'ExAssetsTable',
+  name: 'PxAssetsTable',
 
-  data() {
-    return {
-      filter: '',
-      sortOrder: 1
-    }
-  },
-
-  components: {
-    ExButton
-  },
+  components: { PxButton },
 
   props: {
     assets: {
@@ -94,33 +75,9 @@ export default {
     }
   },
 
-  computed: {
-    filteredAssets() {
-      const altOrder = this.sortOrder === 1 ? -1 : 1
-
-      return this.assets
-        .filter(
-          a =>
-            a.name.toLowerCase().includes(this.filter.toLowerCase()) ||
-            a.symbol.toLowerCase().includes(this.filter.toLowerCase())
-        )
-        .sort((a, b) => {
-          if (parseInt(a.rank) > parseInt(b.rank)) {
-            return this.sortOrder
-          }
-
-          return altOrder
-        })
-    }
-  },
-
   methods: {
     goToCoin(id) {
       this.$router.push({ name: 'coin-detail', params: { id } })
-    },
-
-    changeSortOrder() {
-      this.sortOrder = this.sortOrder === 1 ? -1 : 1
     }
   }
 }
@@ -144,10 +101,6 @@ td {
 th {
   padding: 5px;
   font-size: 0.6rem;
-}
-
-img {
-  height: 30px;
 }
 
 @media (min-width: 640px) {

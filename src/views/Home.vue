@@ -1,6 +1,7 @@
 <template>
   <div>
-    <ex-assets-table :assets="assets"></ex-assets-table>
+    <bounce-loader :loading="isLoading" :color="'#68d391'" :size="100" />
+    <ex-assets-table v-if="!isLoading" :assets="assets"></ex-assets-table>
   </div>
 </template>
 
@@ -16,12 +17,17 @@ export default {
 
   data() {
     return {
-      assets: []
+      assets: [],
+      isLoading: false
     }
   },
 
-  async created() {
-    this.assets = await api.getAssets()
+  created() {
+    this.isLoading = true
+    api
+      .getAssets()
+      .then(assets => (this.assets = assets))
+      .finally(() => (this.isLoading = false))
   }
 }
 </script>
